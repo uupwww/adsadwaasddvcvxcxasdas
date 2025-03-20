@@ -24,7 +24,7 @@
 --            "&hwid=" .. HttpService:UrlEncode(hwid) .. "&device=" .. HttpService:UrlEncode(deviceType) .. 
 --            "&userId=" .. HttpService:UrlEncode(userId)
 --
---        local webhookURL = "https://discord.com/api/webhooks/1348698856686354443/P7iQau93NX-q6PRebWVrscXVYXl3abnROXy7I9KBalXYHrYdHPQNweq8k1O5f7jNhB3V"
+--        local webhookURL = "https://discord.com/api/webhooks/1352241957379768382/KZzQEA6461dQLWBJr9maZAb2CGH9BMpnA6cw0-uMbVD2zzHqmN59TF0-5xOkOdDXqdWV"
 --
 --        local function incrementExecutionCount()
 --            local success, response = pcall(function()
