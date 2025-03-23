@@ -125,9 +125,6 @@ Tabs.Home:AddParagraph({
     Content = "[+] = Added  [-] = Fixed ----------------------------- [+] Added NPC Camlock + NPC Hitbox + NPC Lock GUI"
 })
 
-
-
-
 Tabs.Main:AddParagraph({
     Title = "Patched - 3/2/25",
     Content = "Hello everyone sorry to say but due to the latest update in Dead Rails the Bring Items feature has been patched i am currently looking for a workaround to make it functional again thank you for your understanding"
@@ -393,7 +390,6 @@ uis.InputEnded:Connect(function(input, gp)
     end
 end)
 
-
 local nobandagedelay = false
 local ShowTextRuntimeItems = false
 local ApplyGunMods = false
@@ -646,8 +642,6 @@ local AmbientColorPicker = Tabs.Weather:AddColorpicker("AmbientColorChanger", {
         AmbientColor = Value
     end
 })
-
-
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -1012,9 +1006,6 @@ local AutoAimShoot = Tabs.Aimbot:AddToggle("AutoAimShoot", {
         end
     end
 })
-
-
-
 
 Tabs.Aimbot:AddButton({
     Title = "NPC Camlock + NPC Hitbox + NPC Lock GUI",
