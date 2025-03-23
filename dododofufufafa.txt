@@ -364,6 +364,36 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 
+local runService = game:GetService("RunService")
+local uis = game:GetService("UserInputService")
+local firing = false
+local lastFireLoop = nil -- supaya bisa stop loop-nya nanti
+
+-- Fungsi sync semua LastFireTime
+local function syncAllFireTimeGlobal()
+    for _, obj in pairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj:FindFirstChild("ClientWeaponState") and obj:FindFirstChild("ServerWeaponState") then
+            local now = tick()
+            obj.ClientWeaponState.LastFireTime.Value = now
+            obj.ServerWeaponState.LastFireTime.Value = now
+        end
+    end
+end
+
+-- Deteksi klik kiri
+uis.InputBegan:Connect(function(input, gp)
+    if not gp and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        firing = true
+    end
+end)
+
+uis.InputEnded:Connect(function(input, gp)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        firing = false
+    end
+end)
+
+
 local nobandagedelay = false
 local ShowTextRuntimeItems = false
 local ApplyGunMods = false
@@ -398,43 +428,62 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-if ApplyGunMods then
-    local player = game:GetService("Players").LocalPlayer
-    local backpack = player:FindFirstChild("Backpack")
-    local character = player.Character
+Callback = function(Value)
+    ApplyGunMods = Value
 
-    -- Fungsi untuk mengubah konfigurasi senjata
-    local function modifyWeapon(tool)
-        if tool and tool:FindFirstChild("WeaponConfiguration") then
-            local config = tool.WeaponConfiguration
-            if config:FindFirstChild("FireDelay") and config:FindFirstChild("SpreadAngle") and config:FindFirstChild("ReloadDuration") then
-                config.FireDelay.Value = firerate
-                config.SpreadAngle.Value = spread
-                config.ReloadDuration.Value = reloadtime
+    if ApplyGunMods then
+        -- Ubah senjata seperti biasa
+        local player = game:GetService("Players").LocalPlayer
+        local backpack = player:FindFirstChild("Backpack")
+        local character = player.Character
+
+        local function modifyWeapon(tool)
+            if tool and tool:FindFirstChild("WeaponConfiguration") then
+                local config = tool.WeaponConfiguration
+                if config:FindFirstChild("FireDelay") and config:FindFirstChild("SpreadAngle") and config:FindFirstChild("ReloadDuration") then
+                    config.FireDelay.Value = firerate
+                    config.SpreadAngle.Value = spread
+                    config.ReloadDuration.Value = reloadtime
+                end
             end
         end
-    end
 
-    -- Ubah senjata di Backpack
-    if backpack then
-        for _, tool in pairs(backpack:GetChildren()) do
-            if tool:IsA("Tool") and (tool.Name == "NavyRevolver" or tool.Name == "Shotgun" or tool.Name == "Rifle" or
-                                     tool.Name == "Sawed-Off Shotgun" or tool.Name == "Revolver" or tool.Name == "Mauser") then
-                modifyWeapon(tool)
+        if backpack then
+            for _, tool in pairs(backpack:GetChildren()) do
+                if tool:IsA("Tool") then
+                    modifyWeapon(tool)
+                end
             end
         end
-    end
 
-    -- Ubah senjata di Character (jika sudah diambil dari Backpack)
-    if character then
-        for _, tool in pairs(character:GetChildren()) do
-            if tool:IsA("Tool") and (tool.Name == "NavyRevolver" or tool.Name == "Shotgun" or tool.Name == "Rifle" or
-                                     tool.Name == "Sawed-Off Shotgun" or tool.Name == "Revolver" or tool.Name == "Mauser") then
-                modifyWeapon(tool)
+        if character then
+            for _, tool in pairs(character:GetChildren()) do
+                if tool:IsA("Tool") then
+                    modifyWeapon(tool)
+                end
             end
+        end
+
+        -- Mulai auto sync LastFireTime
+        if not lastFireLoop then
+            lastFireLoop = runService.RenderStepped:Connect(function()
+                if firing then
+                    syncAllFireTimeGlobal()
+                end
+            end)
+            print("[✅] FireTime Sync Aktif")
+        end
+
+    else
+        -- Hentikan loop LastFireTime jika toggle dimatikan
+        if lastFireLoop then
+            lastFireLoop:Disconnect()
+            lastFireLoop = nil
+            print("[⛔] FireTime Sync Nonaktif")
         end
     end
 end
+
     if AutoHeal and LocalPlayer.Character and LocalPlayer.Character.Humanoid and LocalPlayer.Character.Humanoid.Health < HealAt then
         local Bandage = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Bandage")
         if Bandage ~= nil then
