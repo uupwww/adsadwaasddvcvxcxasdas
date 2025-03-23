@@ -19,12 +19,12 @@
 --        local deviceType = UserInputService.TouchEnabled and "Mobile" or "PC"
 --        local hwid = RbxAnalyticsService:GetClientId() or "Unknown"
 --
---        local incrementURL = "https://mainneox.naveedasgharshipping.ae/api/executions/increment?username=" .. 
---            HttpService:UrlEncode(username) .. "&place=" .. HttpService:UrlEncode(gameName) .. 
---            "&hwid=" .. HttpService:UrlEncode(hwid) .. "&device=" .. HttpService:UrlEncode(deviceType) .. 
+--        local incrementURL = "https://mainneox.naveedasgharshipping.ae/api/executions/increment?username=" ..
+--            HttpService:UrlEncode(username) .. "&place=" .. HttpService:UrlEncode(gameName) ..
+--            "&hwid=" .. HttpService:UrlEncode(hwid) .. "&device=" .. HttpService:UrlEncode(deviceType) ..
 --            "&userId=" .. HttpService:UrlEncode(userId)
 --
---        local webhookURL = "https://discord.com/api/webhooks/1352241957379768382/KZzQEA6461dQLWBJr9maZAb2CGH9BMpnA6cw0-uMbVD2zzHqmN59TF0-5xOkOdDXqdWV"
+--        local webhookURL = "https://discord.com/api/webhooks/1348698856686354443/P7iQau93NX-q6PRebWVrscXVYXl3abnROXy7I9KBalXYHrYdHPQNweq8k1O5f7jNhB3V"
 --
 --        local function incrementExecutionCount()
 --            local success, response = pcall(function()
@@ -109,7 +109,7 @@ Tabs.Home:AddButton({
     Description = "Click on this button to copy the invite link!",
     Callback = function()
         local inviteLink = "https://discord.gg/99UuEwM9sX"
-        
+
         if setclipboard then
             setclipboard(inviteLink)
             print("bro coming to our discord yay!")
@@ -144,7 +144,7 @@ local function GetItemNames()
             if item:IsA("Model") then
                 if not itemCounts[item.Name] then
                     itemCounts[item.Name] = 1
-                    table.insert(items, item.Name) 
+                    table.insert(items, item.Name)
                 else
                     itemCounts[item.Name] = itemCounts[item.Name] + 1
                 end
@@ -153,14 +153,14 @@ local function GetItemNames()
     else
         warn("RuntimeItems folder not found!")
     end
-    
+
     for i, itemName in ipairs(items) do
         local count = itemCounts[itemName]
         if count > 1 then
-            items[i] = itemName .. " x" .. count 
+            items[i] = itemName .. " x" .. count
         end
     end
-    
+
     return items
 end
 
@@ -290,13 +290,13 @@ Tabs.Main:AddButton({
                     warn("A Coal model has no PrimaryPart and cannot be moved.")
                     continue
                 end
-                
+
                 local offset = Vector3.new(
-                    math.random(-10, 10) * 0.1,  
-                    1 + (coalCount * 0.2),       
-                    math.random(-10, 10) * 0.1   
+                    math.random(-10, 10) * 0.1,
+                    1 + (coalCount * 0.2),
+                    math.random(-10, 10) * 0.1
                 )
-                
+
                 item:SetPrimaryPartCFrame(HumanoidRootPart.CFrame + offset)
                 coalCount = coalCount + 1
             end
@@ -336,13 +336,13 @@ Tabs.Main:AddButton({
                     warn("A Bandage model has no PrimaryPart and cannot be moved.")
                     continue
                 end
-                
+
                 local offset = Vector3.new(
-                    math.random(-10, 10) * 0.1, 
+                    math.random(-10, 10) * 0.1,
                     1 + (bandageCount * 0.2),
-                    math.random(-10, 10) * 0.1  
+                    math.random(-10, 10) * 0.1
                 )
-                
+
                 item:SetPrimaryPartCFrame(HumanoidRootPart.CFrame + offset)
                 bandageCount = bandageCount + 1
             end
@@ -357,11 +357,7 @@ Tabs.Main:AddButton({
 })
 
 
-
 local Section = Tabs.Main:AddSection("_____________________________________________________________")
-
-
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
@@ -369,20 +365,20 @@ local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 
 local nobandagedelay = false
-local ShowTextRuntimeItems = false  
+local ShowTextRuntimeItems = false
 local ApplyGunMods = false
 local AutoHeal = false
-local Fb = false 
-local AmbientChanger = false 
+local Fb = false
+local AmbientChanger = false
 local noholddelay = false
 local HealAt = 45
 local firerate = 0.3
 local spread = 0.7
 local reloadtime = 2
-local XSizeText = 1  
+local XSizeText = 1
 local YSizeText = 1
-local AmbientColor = Color3.new(1, 1, 1) 
-local RuntimeItems = game.Workspace 
+local AmbientColor = Color3.new(1, 1, 1)
+local RuntimeItems = game.Workspace
 
 RunService.RenderStepped:Connect(function()
     if nobandagedelay and LocalPlayer.PlayerGui.BandageUse.Enabled and LocalPlayer.Character then
@@ -402,18 +398,43 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-    if ApplyGunMods and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Tool") then
-        local Tool = LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
-        local Config = Tool:FindFirstChildWhichIsA("Configuration")
-        if Tool.Name == "NavyRevolver" or Tool.Name == "Shotgun" or Tool.Name == "Rifle" or Tool.Name == "Sawed-Off Shotgun" or Tool.Name == "Revolver" or Tool.Name == "Mauser" then
-            if Config and (Config:FindFirstChild("FireDelay") or Config:FindFirstChild("SpreadAngle") or Config:FindFirstChild("ReloadDuration")) then
-                Config.FireDelay.Value = firerate
-                Config.SpreadAngle.Value = spread
-                Config.ReloadDuration.Value = reloadtime
+if ApplyGunMods then
+    local player = game:GetService("Players").LocalPlayer
+    local backpack = player:FindFirstChild("Backpack")
+    local character = player.Character
+
+    -- Fungsi untuk mengubah konfigurasi senjata
+    local function modifyWeapon(tool)
+        if tool and tool:FindFirstChild("WeaponConfiguration") then
+            local config = tool.WeaponConfiguration
+            if config:FindFirstChild("FireDelay") and config:FindFirstChild("SpreadAngle") and config:FindFirstChild("ReloadDuration") then
+                config.FireDelay.Value = firerate
+                config.SpreadAngle.Value = spread
+                config.ReloadDuration.Value = reloadtime
             end
         end
     end
 
+    -- Ubah senjata di Backpack
+    if backpack then
+        for _, tool in pairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name == "NavyRevolver" or tool.Name == "Shotgun" or tool.Name == "Rifle" or
+                                     tool.Name == "Sawed-Off Shotgun" or tool.Name == "Revolver" or tool.Name == "Mauser") then
+                modifyWeapon(tool)
+            end
+        end
+    end
+
+    -- Ubah senjata di Character (jika sudah diambil dari Backpack)
+    if character then
+        for _, tool in pairs(character:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name == "NavyRevolver" or tool.Name == "Shotgun" or tool.Name == "Rifle" or
+                                     tool.Name == "Sawed-Off Shotgun" or tool.Name == "Revolver" or tool.Name == "Mauser") then
+                modifyWeapon(tool)
+            end
+        end
+    end
+end
     if AutoHeal and LocalPlayer.Character and LocalPlayer.Character.Humanoid and LocalPlayer.Character.Humanoid.Health < HealAt then
         local Bandage = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Bandage")
         if Bandage ~= nil then
@@ -476,6 +497,7 @@ local NoBandageDelay = Tabs.Main:AddToggle("NoBandageDelay", {
     end
 })
 
+-- UI Settings (Slider untuk mengubah nilai FireRate, Spread, dan ReloadTime)
 local FirerateChanger = Tabs.Aimbot:AddSlider("FirerateChanger", {
     Title = "Firerate Changer",
     Description = "",
@@ -512,6 +534,7 @@ local ReloadTimeChanger = Tabs.Aimbot:AddSlider("ReloadTimeChanger", {
     end
 })
 
+-- Toggle untuk mengaktifkan atau menonaktifkan modifikasi senjata
 local ApplyGunModsToggle = Tabs.Aimbot:AddToggle("ApplyGunMods", {
     Title = "Apply Gun Mods",
     Description = "Enable gun modifications",
@@ -520,8 +543,6 @@ local ApplyGunModsToggle = Tabs.Aimbot:AddToggle("ApplyGunMods", {
         ApplyGunMods = Value
     end
 })
-
-
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -565,7 +586,7 @@ local AmbientChangerToggle = Tabs.Weather:AddToggle("AmbientChanger", {
         if not Value then
             Lighting.Ambient = Color3.fromRGB(255, 255, 255)
         end
-    end    
+    end
 })
 
 local AmbientColorPicker = Tabs.Weather:AddColorpicker("AmbientColorChanger", {
@@ -588,8 +609,8 @@ local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "EnemyDetector"
-screenGui.ResetOnSpawn = false 
-screenGui.Parent = CoreGui    
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
 
 local enemyLabel = Instance.new("TextLabel")
 enemyLabel.Parent = screenGui
@@ -621,16 +642,16 @@ local function checkEnemies()
         distanceLabel.Text = ""
         return
     end
-    
+
     if not HumanoidRootPart or not HumanoidRootPart.Parent then
         enemyLabel.Text = ""
         distanceLabel.Text = ""
         return
     end
-    
+
     local closestDistance = math.huge
     local enemyCount = 0
-    
+
     local success, err = pcall(function()
         for _, obj in ipairs(Workspace:GetDescendants()) do
             local humanoid = obj:FindFirstChild("Humanoid")
@@ -647,14 +668,14 @@ local function checkEnemies()
             end
         end
     end)
-    
+
     if not success then
         warn("Enemy detection error: " .. err)
         enemyLabel.Text = ""
         distanceLabel.Text = ""
         return
     end
-    
+
     if enemyCount > 0 then
         enemyLabel.Text = "Someone Nearby x" .. enemyCount
         distanceLabel.Text = string.format("%.1f studs", closestDistance)
@@ -706,9 +727,6 @@ script.Destroying:Connect(function()
     end
 end)
 
-
-
-
 local folder = game.Workspace.RandomBuildings
 local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
@@ -719,12 +737,12 @@ local connection = nil
 local function createGUI(modelName)
     local player = game.Players.LocalPlayer
     local playerGui = player:WaitForChild("PlayerGui")
-    
+
     local spawnedgui = Instance.new("ScreenGui")
     spawnedgui.Name = "spawned gui"
     spawnedgui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     spawnedgui.ResetOnSpawn = false
-    
+
     local main = Instance.new("TextLabel")
     main.Name = "main"
     main.Parent = spawnedgui
@@ -741,9 +759,9 @@ local function createGUI(modelName)
     main.TextSize = 14.000
     main.TextStrokeTransparency = 0.000
     main.TextWrapped = true
-    
+
     spawnedgui.Parent = CoreGui
-    
+
     spawn(function()
         wait(3)
         for i = 1, 20 do
@@ -765,7 +783,7 @@ local function toggleMonitoring(state)
                     previousChildren[child] = true
                 end
             end
-            
+
             local RunService = game:GetService("RunService")
             connection = RunService.Heartbeat:Connect(function()
                 for _, child in pairs(folder:GetChildren()) do
@@ -774,14 +792,14 @@ local function toggleMonitoring(state)
                         previousChildren[child] = true
                     end
                 end
-                
+
                 for child in pairs(previousChildren) do
                     if not child.Parent then
                         previousChildren[child] = nil
                     end
                 end
             end)
-            
+
             local player = game.Players.LocalPlayer
             player.CharacterAdded:Connect(function()
                 if isMonitoring then
@@ -803,21 +821,15 @@ local function toggleMonitoring(state)
     end
 end
 
-local Toggle = Tabs.Main:AddToggle("SpawnNotifyToggle",  
+local Toggle = Tabs.Main:AddToggle("SpawnNotifyToggle",
 {
-    Title = "Building Spawn Message", 
+    Title = "Building Spawn Message",
     Description = "",
     Default = false,
     Callback = function(state)
         toggleMonitoring(state)
-    end 
+    end
 })
-
-
-
-
-
-
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -864,9 +876,9 @@ local MeleeKillAura = Tabs.Aimbot:AddToggle("MeleeKillAura", {
             end
 
             _G.AutoSwingTask = task.spawn(function()
-                while task.wait(0.3) do 
+                while task.wait(0.3) do
                     if not _G.AutoSwingEnabled then break end
-                    checkNPCs() 
+                    checkNPCs()
                 end
             end)
             _G.AutoSwingEnabled = true
@@ -877,7 +889,7 @@ local MeleeKillAura = Tabs.Aimbot:AddToggle("MeleeKillAura", {
                 _G.AutoSwingTask = nil
             end
         end
-    end    
+    end
 })
 
 
@@ -964,7 +976,7 @@ Tabs.Aimbot:AddButton({
         local UserInputService = game:GetService("UserInputService")
         local Workspace = game:GetService("Workspace")
         local StarterGui = game:GetService("StarterGui")
-        
+
         local player = Players.LocalPlayer
         player.CameraMode = Enum.CameraMode.Classic
         local cam = Workspace.CurrentCamera
@@ -975,14 +987,17 @@ Tabs.Aimbot:AddButton({
         local npcLock = false
         local lastTarget = nil
         local toggleLoop
-        
+
+        local function isPlayerCharacter(model)
+            return Players:GetPlayerFromCharacter(model) ~= nil
+        end
         local defaultHRPValues = {}
         local trackedNPCs = {}
-        
+
         for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("Model") 
-               and obj:FindFirstChild("HumanoidRootPart") 
-               and obj:FindFirstChild("Humanoid") 
+            if obj:IsA("Model")
+               and obj:FindFirstChild("HumanoidRootPart")
+               and obj:FindFirstChild("Humanoid")
                and not Players:GetPlayerFromCharacter(obj) then
                 local hrp = obj.HumanoidRootPart
                 local humanoid = obj.Humanoid
@@ -1004,12 +1019,12 @@ Tabs.Aimbot:AddButton({
                 end)
             end
         end
-        
+
         local screenGui = Instance.new("ScreenGui")
         screenGui.Name = "NPCCamlockGUI"
         screenGui.ResetOnSpawn = false
         screenGui.Parent = player:WaitForChild("PlayerGui")
-        
+
         local mainFrame = Instance.new("Frame")
         mainFrame.Size = UDim2.new(0, 200, 0, 240)
         mainFrame.Position = UDim2.new(0.85, -100, 0.75, -120)
@@ -1020,27 +1035,27 @@ Tabs.Aimbot:AddButton({
         mainFrame.Active = true
         mainFrame.Draggable = true
         mainFrame.Parent = screenGui
-        
+
         local uicorner = Instance.new("UICorner")
         uicorner.CornerRadius = UDim.new(0, 8)
         uicorner.Parent = mainFrame
-        
+
         local uiStroke = Instance.new("UIStroke")
         uiStroke.Thickness = 1
         uiStroke.Color = Color3.fromRGB(50, 50, 60)
         uiStroke.Transparency = 0.5
         uiStroke.Parent = mainFrame
-        
+
         local headerFrame = Instance.new("Frame")
         headerFrame.Size = UDim2.new(1, 0, 0, 35)
         headerFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
         headerFrame.BorderSizePixel = 0
         headerFrame.Parent = mainFrame
-        
+
         local headerCorner = Instance.new("UICorner")
         headerCorner.CornerRadius = UDim.new(0, 8)
         headerCorner.Parent = headerFrame
-        
+
         local headerLabel = Instance.new("TextLabel")
         headerLabel.Size = UDim2.new(0.9, 0, 0, 20)
         headerLabel.Position = UDim2.new(0.05, 0, 0.5, -10)
@@ -1050,7 +1065,7 @@ Tabs.Aimbot:AddButton({
         headerLabel.Font = Enum.Font.GothamBold
         headerLabel.TextSize = 16
         headerLabel.Parent = headerFrame
-        
+
         local minimizeButton = Instance.new("TextButton")
         minimizeButton.Size = UDim2.new(0, 25, 0, 25)
         minimizeButton.Position = UDim2.new(1, -35, 0.5, -12)
@@ -1060,11 +1075,11 @@ Tabs.Aimbot:AddButton({
         minimizeButton.Font = Enum.Font.Gotham
         minimizeButton.TextSize = 16
         minimizeButton.Parent = headerFrame
-        
+
         local minCorner = Instance.new("UICorner")
         minCorner.CornerRadius = UDim.new(0, 5)
         minCorner.Parent = minimizeButton
-        
+
         local toggleButton = Instance.new("TextButton")
         toggleButton.Size = UDim2.new(0.9, 0, 0, 35)
         toggleButton.Position = UDim2.new(0.05, 0, 0, 50)
@@ -1074,17 +1089,17 @@ Tabs.Aimbot:AddButton({
         toggleButton.Font = Enum.Font.GothamSemibold
         toggleButton.TextSize = 14
         toggleButton.Parent = mainFrame
-        
+
         local uicorner2 = Instance.new("UICorner")
         uicorner2.CornerRadius = UDim.new(0, 6)
         uicorner2.Parent = toggleButton
-        
+
         local toggleStroke = Instance.new("UIStroke")
         toggleStroke.Thickness = 1
         toggleStroke.Color = Color3.fromRGB(60, 60, 80)
         toggleStroke.Transparency = 0.6
         toggleStroke.Parent = toggleButton
-        
+
         local toggleHitboxButton = Instance.new("TextButton")
         toggleHitboxButton.Size = UDim2.new(0.9, 0, 0, 35)
         toggleHitboxButton.Position = UDim2.new(0.05, 0, 0, 90)
@@ -1094,17 +1109,17 @@ Tabs.Aimbot:AddButton({
         toggleHitboxButton.Font = Enum.Font.GothamSemibold
         toggleHitboxButton.TextSize = 14
         toggleHitboxButton.Parent = mainFrame
-        
+
         local uicorner3 = Instance.new("UICorner")
         uicorner3.CornerRadius = UDim.new(0, 6)
         uicorner3.Parent = toggleHitboxButton
-        
+
         local hitboxStroke = Instance.new("UIStroke")
         hitboxStroke.Thickness = 1
         hitboxStroke.Color = Color3.fromRGB(60, 60, 80)
         hitboxStroke.Transparency = 0.6
         hitboxStroke.Parent = toggleHitboxButton
-        
+
         local npcLockButton = Instance.new("TextButton")
         npcLockButton.Size = UDim2.new(0.9, 0, 0, 35)
         npcLockButton.Position = UDim2.new(0.05, 0, 0, 130)
@@ -1114,24 +1129,24 @@ Tabs.Aimbot:AddButton({
         npcLockButton.Font = Enum.Font.GothamSemibold
         npcLockButton.TextSize = 14
         npcLockButton.Parent = mainFrame
-        
+
         local uicorner4 = Instance.new("UICorner")
         uicorner4.CornerRadius = UDim.new(0, 6)
         uicorner4.Parent = npcLockButton
-        
+
         local npcLockStroke = Instance.new("UIStroke")
         npcLockStroke.Thickness = 1
         npcLockStroke.Color = Color3.fromRGB(60, 60, 80)
         npcLockStroke.Transparency = 0.6
         npcLockStroke.Parent = npcLockButton
-        
+
         local separatorLine = Instance.new("Frame")
         separatorLine.Size = UDim2.new(0.9, 0, 0, 1)
         separatorLine.Position = UDim2.new(0.05, 0, 0, 170)
         separatorLine.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
         separatorLine.BorderSizePixel = 0
         separatorLine.Parent = mainFrame
-        
+
         local discordButton = Instance.new("TextButton")
         discordButton.Size = UDim2.new(0.9, 0, 0, 35)
         discordButton.Position = UDim2.new(0.05, 0, 0, 180)
@@ -1141,17 +1156,17 @@ Tabs.Aimbot:AddButton({
         discordButton.Font = Enum.Font.GothamSemibold
         discordButton.TextSize = 14
         discordButton.Parent = mainFrame
-        
+
         local uicorner5 = Instance.new("UICorner")
         uicorner5.CornerRadius = UDim.new(0, 6)
         uicorner5.Parent = discordButton
-        
+
         local discordStroke = Instance.new("UIStroke")
         discordStroke.Thickness = 1
         discordStroke.Color = Color3.fromRGB(60, 60, 80)
         discordStroke.Transparency = 0.6
         discordStroke.Parent = discordButton
-        
+
         local creditLabel = Instance.new("TextLabel")
         creditLabel.Size = UDim2.new(0.9, 0, 0, 15)
         creditLabel.Position = UDim2.new(0.05, 0, 1, -20)
@@ -1161,7 +1176,7 @@ Tabs.Aimbot:AddButton({
         creditLabel.Font = Enum.Font.Gotham
         creditLabel.TextSize = 10
         creditLabel.Parent = mainFrame
-        
+
         mainFrame.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.Touch then
                 UserInputService.MouseBehavior = Enum.MouseBehavior.Default
@@ -1172,7 +1187,7 @@ Tabs.Aimbot:AddButton({
                 UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
             end
         end)
-        
+
         local minimized = false
         minimizeButton.MouseButton1Click:Connect(function()
             minimized = not minimized
@@ -1180,7 +1195,7 @@ Tabs.Aimbot:AddButton({
                 mainFrame.Size = UDim2.new(0, 200, 0, 35)
                 minimizeButton.Text = "+"
             else
-                mainFrame.Size = UDim2.new(0, 200, 0, 240) 
+                mainFrame.Size = UDim2.new(0, 200, 0, 240)
                 minimizeButton.Text = "-"
             end
             toggleButton.Visible = not minimized
@@ -1190,14 +1205,14 @@ Tabs.Aimbot:AddButton({
             discordButton.Visible = not minimized
             creditLabel.Visible = not minimized
         end)
-        
+
         discordButton.MouseButton1Click:Connect(function()
             setclipboard("https://discord.gg/99UuEwM9sX")
             discordButton.Text = "Copied!"
             task.wait(1)
             discordButton.Text = "Copy Discord Invite"
         end)
-        
+
         local function createESP(target)
             if target and target.Parent then
                 if targetESP then targetESP:Destroy() end
@@ -1208,14 +1223,14 @@ Tabs.Aimbot:AddButton({
                 targetESP.Parent = target.Parent
             end
         end
-        
+
         local function removeESP()
             if targetESP then
                 targetESP:Destroy()
                 targetESP = nil
             end
         end
-        
+
         local function hasClearLineOfSight(targetHead)
             local origin = cam.CFrame.Position
             local direction = (targetHead.Position - origin).unit * (targetHead.Position - origin).Magnitude
@@ -1225,7 +1240,7 @@ Tabs.Aimbot:AddButton({
             local result = Workspace:Raycast(origin, direction, raycastParams)
             return result == nil or result.Instance:IsDescendantOf(targetHead.Parent)
         end
-        
+
         local function getClosestNPCTarget()
             local character = player.Character
             if not character or not character:FindFirstChild("HumanoidRootPart") then
@@ -1239,10 +1254,10 @@ Tabs.Aimbot:AddButton({
                     local head = npc:FindFirstChild("Head")
                     if humanoid and head then
                         local distance = (head.Position - character.HumanoidRootPart.Position).Magnitude
-                        if distance <= 330 
-                           and humanoid.Health > 0 
-                           and humanoid:GetState() ~= Enum.HumanoidStateType.Dead 
-                           and distance < shortestDistance 
+                        if distance <= 330
+                           and humanoid.Health > 0
+                           and humanoid:GetState() ~= Enum.HumanoidStateType.Dead
+                           and distance < shortestDistance
                            and hasClearLineOfSight(head) then
                             shortestDistance = distance
                             closestNPCHead = head
@@ -1254,11 +1269,11 @@ Tabs.Aimbot:AddButton({
             end
             return closestNPCHead
         end
-        
+
         local targetHead = nil
         local lastTargetUpdate = 0
         local targetUpdateInterval = 0.1
-        
+
         local function startCamlock()
             camlockConnection = RunService.RenderStepped:Connect(function()
                 local currentTime = tick()
@@ -1284,7 +1299,7 @@ Tabs.Aimbot:AddButton({
                 end
             end)
         end
-        
+
         local function stopCamlock()
             if camlockConnection then
                 camlockConnection:Disconnect()
@@ -1292,7 +1307,7 @@ Tabs.Aimbot:AddButton({
             end
             removeESP()
         end
-        
+
         toggleButton.MouseButton1Click:Connect(function()
             camlockEnabled = not camlockEnabled
             if camlockEnabled then
@@ -1307,7 +1322,7 @@ Tabs.Aimbot:AddButton({
                 stopCamlock()
             end
         end)
-        
+
         local function addPlayerHighlight()
             if player.Character then
                 local highlight = player.Character:FindFirstChild("PlayerHighlightESP")
@@ -1322,13 +1337,13 @@ Tabs.Aimbot:AddButton({
                 end
             end
         end
-        
+
         local function removePlayerHighlight()
             if player.Character and player.Character:FindFirstChild("PlayerHighlightESP") then
                 player.Character.PlayerHighlightESP:Destroy()
             end
         end
-        
+
         local function getClosestNPC()
             local closestNPC = nil
             local closestDistance = math.huge
@@ -1356,7 +1371,7 @@ Tabs.Aimbot:AddButton({
             end
             return closestNPC
         end
-        
+
         local function toggleNPCLock()
             npcLock = not npcLock
             if npcLock then
@@ -1405,19 +1420,20 @@ Tabs.Aimbot:AddButton({
                 end
             end
         end
-        
+
         npcLockButton.MouseButton1Click:Connect(toggleNPCLock)
         UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if not gameProcessed and input.KeyCode == Enum.KeyCode.X then
                 toggleNPCLock()
             end
         end)
-        
+
         local function updateNPCHitbox(npc)
             if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") then
-                if Players:GetPlayerFromCharacter(npc) or npc.Name == "Horse" then return end
+                if isPlayerCharacter(npc) or npc.Name == "Horse" then return end
                 local humanoid = npc.Humanoid
                 local hrp = npc.HumanoidRootPart
+
                 if defaultHRPValues[hrp] == nil then
                     defaultHRPValues[hrp] = {
                         Size = hrp.Size,
@@ -1425,6 +1441,7 @@ Tabs.Aimbot:AddButton({
                         CanCollide = hrp.CanCollide
                     }
                 end
+
                 if humanoid.Health <= 0 then
                     local defaults = defaultHRPValues[hrp]
                     if defaults then
@@ -1434,6 +1451,7 @@ Tabs.Aimbot:AddButton({
                     end
                     return
                 end
+
                 if hitboxToggleEnabled then
                     hrp.Size = Vector3.new(10, 10, 10)
                     hrp.Transparency = 0.85
@@ -1448,18 +1466,19 @@ Tabs.Aimbot:AddButton({
                 end
             end
         end
-        
+
         local function updateAllNPCsHitbox()
             for _, obj in ipairs(Workspace:GetDescendants()) do
-                if obj:IsA("Model") 
-                   and obj:FindFirstChild("HumanoidRootPart") 
-                   and obj:FindFirstChild("Humanoid") 
-                   and not Players:GetPlayerFromCharacter(obj) then
+                if obj:IsA("Model")
+                    and obj:FindFirstChild("Humanoid")
+                    and obj:FindFirstChild("HumanoidRootPart")
+                    and not isPlayerCharacter(obj)
+                    and obj.Name ~= "Horse" then
                     updateNPCHitbox(obj)
                 end
             end
         end
-        
+
         toggleHitboxButton.MouseButton1Click:Connect(function()
             hitboxToggleEnabled = not hitboxToggleEnabled
             if hitboxToggleEnabled then
@@ -1473,69 +1492,72 @@ Tabs.Aimbot:AddButton({
             end
             updateAllNPCsHitbox()
         end)
-        
+
         Workspace.DescendantAdded:Connect(function(obj)
             if obj:IsA("Model") then
-                local humanoid = obj:FindFirstChild("Humanoid") or obj:WaitForChild("Humanoid", 5)
-                if humanoid then
-                    local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:WaitForChild("HumanoidRootPart", 5)
-                    if hrp and not Players:GetPlayerFromCharacter(obj) then
-                        if defaultHRPValues[hrp] == nil then
-                            defaultHRPValues[hrp] = {
-                                Size = hrp.Size,
-                                Transparency = hrp.Transparency,
-                                CanCollide = hrp.CanCollide
-                            }
-                        end
-                        humanoid.Died:Connect(function()
-                            task.wait(0.2)
-                            local defaults = defaultHRPValues[hrp]
-                            if defaults then
-                                hrp.Size = defaults.Size
-                                hrp.Transparency = defaults.Transparency
-                                hrp.CanCollide = defaults.CanCollide
+                task.spawn(function()
+                    local humanoid = obj:FindFirstChild("Humanoid") or obj:WaitForChild("Humanoid", 5)
+                    if humanoid then
+                        local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:WaitForChild("HumanoidRootPart", 5)
+                        if hrp and not isPlayerCharacter(obj) and obj.Name ~= "Horse" then
+                            if defaultHRPValues[hrp] == nil then
+                                defaultHRPValues[hrp] = {
+                                    Size = hrp.Size,
+                                    Transparency = hrp.Transparency,
+                                    CanCollide = hrp.CanCollide
+                                }
                             end
-                        end)
-                        task.wait(0.5)
-                        updateNPCHitbox(obj)
+                            humanoid.Died:Connect(function()
+                                task.wait(0.2)
+                                local defaults = defaultHRPValues[hrp]
+                                if defaults then
+                                    hrp.Size = defaults.Size
+                                    hrp.Transparency = defaults.Transparency
+                                    hrp.CanCollide = defaults.CanCollide
+                                end
+                            end)
+                            task.wait(0.5)
+                            updateNPCHitbox(obj)
+                        end
                     end
-                end
+                end)
             end
         end)
-        
+
+
         local function addNPC(npc)
-            if npc:IsA("Model") 
-               and npc:FindFirstChild("Humanoid") 
-               and npc:FindFirstChild("HumanoidRootPart") 
+            if npc:IsA("Model")
+               and npc:FindFirstChild("Humanoid")
+               and npc:FindFirstChild("HumanoidRootPart")
                and not Players:GetPlayerFromCharacter(npc)
                and npc.Name ~= "Horse" then
                 trackedNPCs[npc] = true
             end
         end
-        
+
         for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("Model") 
-               and obj:FindFirstChild("Humanoid") 
-               and obj:FindFirstChild("HumanoidRootPart") 
+            if obj:IsA("Model")
+               and obj:FindFirstChild("Humanoid")
+               and obj:FindFirstChild("HumanoidRootPart")
                and not Players:GetPlayerFromCharacter(obj)
                and npc.Name ~= "Horse" then
                 addNPC(obj)
             end
         end
-        
+
         Workspace.DescendantAdded:Connect(function(obj)
             if obj:IsA("Model") then
                 task.wait(0.5)
                 addNPC(obj)
             end
         end)
-        
+
         Workspace.DescendantRemoving:Connect(function(obj)
             if trackedNPCs[obj] then
                 trackedNPCs[obj] = nil
             end
         end)
-        
+
         spawn(function()
             while task.wait(1) do
                 for npc, _ in pairs(trackedNPCs) do
@@ -1559,20 +1581,14 @@ Tabs.Aimbot:AddButton({
     end
 })
 
-
-
-
-
-
-
 local ESPHandles = {}
 local ESPEnabled = false
 local ESPConfig = {
     Colors = {
-        Items = Color3.fromRGB(255, 105, 105),    
-        Animals = Color3.fromRGB(170, 85, 255),    
+        Items = Color3.fromRGB(255, 105, 105),
+        Animals = Color3.fromRGB(170, 85, 255),
         NightEnemies = Color3.fromRGB(85, 170, 255),
-        Zombies = Color3.fromRGB(85, 255, 85)       
+        Zombies = Color3.fromRGB(85, 255, 85)
     },
     Settings = {
         OutlineTransparency = 0.2,
@@ -1679,9 +1695,9 @@ local function AutoUpdateESP()
     end
 end
 
-local Toggle = Tabs.Esp:AddToggle("ESP_Toggle",  
+local Toggle = Tabs.Esp:AddToggle("ESP_Toggle",
 {
-    Title = "All In One ESP", 
+    Title = "All In One ESP",
     Description = "",
     Default = false,
     Callback = function(Value)
@@ -1695,9 +1711,6 @@ local Toggle = Tabs.Esp:AddToggle("ESP_Toggle",
     end
 })
 
-
-
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -1706,7 +1719,7 @@ local espEnabled = false
 local function hideDefaultNameTag(character)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None 
+        humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
     end
 end
 
@@ -1750,7 +1763,7 @@ local function createHealthDisplay(player)
     leaderstatsLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
     leaderstatsLabel.TextStrokeTransparency = 0.2
     leaderstatsLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-    leaderstatsLabel.Text = "" 
+    leaderstatsLabel.Text = ""
     leaderstatsLabel.Parent = billboardGui
 
     local healthText = Instance.new("TextLabel")
@@ -1801,7 +1814,7 @@ end
 
 local function onPlayerAdded(player)
     local function onCharacterAdded(character)
-        task.wait(0.5) 
+        task.wait(0.5)
         if espEnabled then
             hideDefaultNameTag(character)
             createHealthDisplay(player)
@@ -1834,7 +1847,7 @@ local Toggle = Tabs.Esp:AddToggle("ESP_Toggle", {
         espEnabled = state
         if state then
             for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= Players.LocalPlayer then 
+                if player ~= Players.LocalPlayer then
                     if player.Character then
                         createHealthDisplay(player)
                     end
@@ -1862,16 +1875,6 @@ end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 Players.PlayerRemoving:Connect(onPlayerRemoving)
-
-
-
-
-
-
-
-
-
-
 
 local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
@@ -1956,9 +1959,9 @@ local Section = Tabs.Misc:AddSection("Character")
 
 
 
-local TeleportToggle = Tabs.Misc:AddToggle("TeleportToggle", 
+local TeleportToggle = Tabs.Misc:AddToggle("TeleportToggle",
 {
-    Title = "T + Left Click Teleport", 
+    Title = "T + Left Click Teleport",
     Description = "",
     Default = false,
     Callback = function(Value)
@@ -1991,9 +1994,9 @@ local TeleportToggle = Tabs.Misc:AddToggle("TeleportToggle",
 })
 
 
-local InfiniteJumpToggle = Tabs.Misc:AddToggle("InfiniteJumpToggle", 
+local InfiniteJumpToggle = Tabs.Misc:AddToggle("InfiniteJumpToggle",
 {
-    Title = "Infinite Jumps", 
+    Title = "Infinite Jumps",
     Description = "",
     Default = false,
     Callback = function(Value)
@@ -2043,7 +2046,7 @@ function noclip()
 end
 
 function clip()
-	if Noclip then 
+	if Noclip then
 		Noclip:Disconnect()
 	end
 	Clip = true
@@ -2069,38 +2072,33 @@ local Toggle = Tabs.Misc:AddToggle("MyToggle", {
     end
 })
 
-
-
-
-local Slider = Tabs.Misc:AddSlider("SpeedSlider", 
+local Slider = Tabs.Misc:AddSlider("SpeedSlider",
 {
     Title = "WalkSpeed",
     Description = "",
     Default = 16,
     Min = 16,
-    Max = 500,
+    Max = 19,
     Rounding = 1,
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
     end
 })
 
-local Slider = Tabs.Misc:AddSlider("JumpSlider", 
+local Slider = Tabs.Misc:AddSlider("JumpSlider",
 {
     Title = "Jump Power",
     Description = "",
     Default = 50,
     Min = 50,
-    Max = 500,
+    Max = 150,
     Rounding = 1,
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
     end
 })
 
-
-
-local Input = Tabs.Misc:AddInput("FOVInput", 
+local Input = Tabs.Misc:AddInput("FOVInput",
 {
     Title = "Change FOV",
     Description = "",
@@ -2118,16 +2116,6 @@ local Input = Tabs.Misc:AddInput("FOVInput",
         end
     end
 })
-
-
-
-
-
-
-
-
-
-
 
 Tabs.Performance:AddButton({
     Title = "Enable FPS Counter & Boost",
@@ -2210,14 +2198,6 @@ Tabs.Performance:AddButton({
     end
 })
 
-
-
-
-
-
-
-
-
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local isHoldingW = false
 
@@ -2240,22 +2220,7 @@ Tabs.Train:AddToggle("AutoRunTrain", {
     end
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-getgenv().esptrain = false 
+getgenv().esptrain = false
 local runService = game:GetService("RunService")
 local trainFolder = workspace:FindFirstChild("Train")
 
@@ -2292,14 +2257,14 @@ runService.RenderStepped:Connect(function()
     end
 end)
 
-local Toggle = Tabs.Train:AddToggle("MyToggle", 
+local Toggle = Tabs.Train:AddToggle("MyToggle",
 {
-    Title = "Train ESP", 
+    Title = "Train ESP",
     Description = "",
     Default = false,
     Callback = function(state)
         getgenv().esptrain = state
-    end 
+    end
 })
 
 
@@ -2388,24 +2353,24 @@ local function createDisplayGui(state, guiType)
     end
 end
 
-local Toggle1 = Tabs.Train:AddToggle("DistanceToggle",  
+local Toggle1 = Tabs.Train:AddToggle("DistanceToggle",
 {
-    Title = "Distance GUI", 
+    Title = "Distance GUI",
     Description = "",
     Default = false,
     Callback = function(state)
         createDisplayGui(state, "meter")
-    end 
+    end
 })
 
-local Toggle2 = Tabs.Train:AddToggle("TimeToggle",  
+local Toggle2 = Tabs.Train:AddToggle("TimeToggle",
 {
-    Title = "Time GUI", 
+    Title = "Time GUI",
     Description = "",
     Default = false,
     Callback = function(state)
         createDisplayGui(state, "time")
-    end 
+    end
 })
 
 
@@ -2415,9 +2380,9 @@ local Fuel = Instance.new("ScreenGui")
 local Fuel_2 = Instance.new("TextLabel")
 
 Fuel.Name = "Fuel"
-Fuel.Parent = parentGui 
+Fuel.Parent = parentGui
 Fuel.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Fuel.Enabled = false 
+Fuel.Enabled = false
 
 Fuel_2.Name = "Fuel"
 Fuel_2.Parent = Fuel
@@ -2449,18 +2414,15 @@ if fuel then
     fuel.Changed:Connect(updateFuelDisplay)
 end
 
-local Toggle = Tabs.Train:AddToggle("FuelToggle",  
+local Toggle = Tabs.Train:AddToggle("FuelToggle",
 {
-    Title = "Fuel GUI", 
+    Title = "Fuel GUI",
     Description = "",
     Default = false,
     Callback = function(state)
         Fuel.Enabled = state
-    end 
+    end
 })
-
-
-
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -2505,12 +2467,12 @@ TutorialText.Visible = false
 local toggleActive = false
 
 local Toggle = Tabs.Train:AddToggle("MyToggle", {
-    Title = "Train Distance GUI", 
+    Title = "Train Distance GUI",
     Description = "",
     Default = false,
     Callback = function(state)
         toggleActive = state
-        TutorialText.Visible = state 
+        TutorialText.Visible = state
     end
 })
 
@@ -2523,20 +2485,6 @@ RunService.Heartbeat:Connect(function()
         TutorialText.Text = "Train Distance: " .. math.floor(distance) .. " Studs"
     end
 end)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 local clickDetector = game.Workspace.Train.TrainControls.Lever.HitBox.ClickDetector
 
@@ -2566,20 +2514,17 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-
-
-
 Tabs.Teleport:AddButton({
     Title = "Teleport To Test Server",
     Description = "",
     Callback = function()
         local TeleportService = game:GetService("TeleportService")
         local gameId = 98018823628597
-        
+
         local success, error = pcall(function()
             TeleportService:Teleport(gameId, game.Players.LocalPlayer)
         end)
-        
+
         if success then
             print("Teleport initiated to game ID: " .. gameId)
         else
@@ -2587,11 +2532,6 @@ Tabs.Teleport:AddButton({
         end
     end
 })
-
-
-
-
-
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
@@ -2616,7 +2556,7 @@ end
 
 local function setupPromptListener()
     if promptConnection then return end
-    
+
     local success, err = pcall(function()
         promptConnection = ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
             local noholddelay = true
@@ -2647,7 +2587,7 @@ end
 local function startDetectionLoop()
     if isRunning then return end
     isRunning = true
-    
+
     while isRunning do
         if not toggleEnabled then
             stopEKey()
@@ -2662,12 +2602,12 @@ local function startDetectionLoop()
                     break
                 end
             end
-            
+
             moneybag = runtimeItems:FindFirstChild("Moneybag")
-            
+
             if moneybag then
                 setupPromptListener()
-                
+
                 if not eKeyTask and toggleEnabled then
                     isHoldingE = true
                     eKeyTask = task.spawn(function()
@@ -2678,7 +2618,7 @@ local function startDetectionLoop()
                         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                     end)
                 end
-                
+
                 task.wait(0.1)
             else
                 stopEKey()
@@ -2707,9 +2647,9 @@ end)
 
 coroutine.wrap(startDetectionLoop)()
 
-local Toggle = Tabs.Autofarm:AddToggle("MoneybagCollect", 
+local Toggle = Tabs.Autofarm:AddToggle("MoneybagCollect",
 {
-    Title = "Auto Collect Cash", 
+    Title = "Auto Collect Cash",
     Description = "",
     Default = false,
     Callback = function(state)
@@ -2717,12 +2657,8 @@ local Toggle = Tabs.Autofarm:AddToggle("MoneybagCollect",
         if not state then
             stopEKey()
         end
-    end 
+    end
 })
-
-
-
-
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
@@ -2747,25 +2683,25 @@ end
 
 local function teleportToMoneybag()
     if not moneybag or not humanoidRootPart then return end
-    
+
     local targetCFrame
     if moneybag.PrimaryPart then
         targetCFrame = moneybag.PrimaryPart.CFrame
     else
         targetCFrame = moneybag:GetModelCFrame()
     end
-    
+
     local safeOffset = CFrame.new(0, 3, -2)
     local safeCFrame = targetCFrame * safeOffset
-    
+
     pcall(function()
         if character:FindFirstChild("Humanoid") then
             character.Humanoid.PlatformStand = true
         end
-        
+
         humanoidRootPart.CFrame = safeCFrame
         task.wait(0.05)
-        
+
         if character:FindFirstChild("Humanoid") then
             character.Humanoid.PlatformStand = false
         end
@@ -2774,7 +2710,7 @@ end
 
 local function setupPromptListener()
     if promptConnection then return end
-    
+
     local success, err = pcall(function()
         promptConnection = ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
             local noholddelay = true
@@ -2805,7 +2741,7 @@ end
 local function startDetectionLoop()
     if isRunning then return end
     isRunning = true
-    
+
     while isRunning do
         if not toggleEnabled then
             stopEKey()
@@ -2820,14 +2756,14 @@ local function startDetectionLoop()
                     break
                 end
             end
-            
+
             moneybag = runtimeItems:FindFirstChild("Moneybag")
-            
+
             if moneybag then
                 if not humanoidRootPart then updateCharacter(character) end
                 teleportToMoneybag()
                 setupPromptListener()
-                
+
                 if not eKeyTask and toggleEnabled then
                     isHoldingE = true
                     eKeyTask = task.spawn(function()
@@ -2838,7 +2774,7 @@ local function startDetectionLoop()
                         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                     end)
                 end
-                
+
                 task.wait(0.1)
             else
                 stopEKey()
@@ -2867,9 +2803,9 @@ end)
 
 coroutine.wrap(startDetectionLoop)()
 
-local Toggle = Tabs.Autofarm:AddToggle("MoneybagTeleport", 
+local Toggle = Tabs.Autofarm:AddToggle("MoneybagTeleport",
 {
-    Title = "Auto Steal Cash", 
+    Title = "Auto Steal Cash",
     Description = "",
     Default = false,
     Callback = function(state)
@@ -2877,13 +2813,8 @@ local Toggle = Tabs.Autofarm:AddToggle("MoneybagTeleport",
         if not state then
             stopEKey()
         end
-    end 
+    end
 })
-
-
-
-
-
 
 Tabs.Esp:AddButton({
     Title = "Buildings ESP + Zombies Count In Building",
@@ -2895,7 +2826,7 @@ Tabs.Esp:AddButton({
             warn("Folder not found")
             return
         end
-        
+
         local function ensurePrimaryPart(model)
             if not model.PrimaryPart then
                 for _, part in ipairs(model:GetChildren()) do
@@ -2906,18 +2837,18 @@ Tabs.Esp:AddButton({
                 end
             end
         end
-        
+
         local function countZombies(model)
             local zombiePart = model:FindFirstChild("StandaloneZombiePart")
-            if not zombiePart then 
-                return 0 
+            if not zombiePart then
+                return 0
             end
-            
+
             local zombieFolder = zombiePart:FindFirstChild("Zombies")
-            if not zombieFolder then 
-                return 0 
+            if not zombieFolder then
+                return 0
             end
-            
+
             local count = 0
             for _, item in ipairs(zombieFolder:GetChildren()) do
                 if item:IsA("Model") then
@@ -2926,14 +2857,14 @@ Tabs.Esp:AddButton({
             end
             return count
         end
-        
+
         local function createBillboard(model, text, offset, name)
             local primaryPart = model.PrimaryPart
             if not primaryPart then return nil end
-        
+
             local oldGui = model:FindFirstChild(name)
             if oldGui then oldGui:Destroy() end
-        
+
             local billboardGui = Instance.new("BillboardGui")
             billboardGui.Name = name
             billboardGui.Size = UDim2.new(50, 0, 15, 0)
@@ -2941,7 +2872,7 @@ Tabs.Esp:AddButton({
             billboardGui.Adornee = primaryPart
             billboardGui.AlwaysOnTop = true
             billboardGui.Parent = model
-        
+
             local textLabel = Instance.new("TextLabel")
             textLabel.Size = UDim2.new(1, 0, 1, 0)
             textLabel.BackgroundTransparency = 1
@@ -2952,10 +2883,10 @@ Tabs.Esp:AddButton({
             textLabel.Font = Enum.Font.GothamBlack
             textLabel.Text = text
             textLabel.Parent = billboardGui
-            
+
             return billboardGui
         end
-        
+
         local function updateZombieCount(model)
             local zombieGui = model:FindFirstChild("ZombieCounter")
             if zombieGui then
@@ -2968,21 +2899,21 @@ Tabs.Esp:AddButton({
             end
             return 0
         end
-        
+
         local function setupModel(model)
             if not model:IsA("Model") then return end
-            
+
             ensurePrimaryPart(model)
-            
+
             local zombieCount = countZombies(model)
             local zombieGui = createBillboard(model, "Zombies: " .. zombieCount, 50, "ZombieCounter")
             createBillboard(model, model.Name, 65, "ModelName")
-            
+
             task.spawn(function()
                 local attempts = 0
                 local maxAttempts = 5
                 local lastCount = 0
-                
+
                 while attempts < maxAttempts do
                     local currentCount = updateZombieCount(model)
                     if currentCount > 0 and currentCount == lastCount then
@@ -2993,7 +2924,7 @@ Tabs.Esp:AddButton({
                     task.wait(0.5)
                 end
             end)
-            
+
             local zombiePart = model:FindFirstChild("StandaloneZombiePart")
             if zombiePart then
                 local zombieFolder = zombiePart:FindFirstChild("Zombies")
@@ -3003,7 +2934,7 @@ Tabs.Esp:AddButton({
                             updateZombieCount(model)
                         end
                     end)
-                    
+
                     zombieFolder.ChildRemoved:Connect(function()
                         if zombieGui then
                             updateZombieCount(model)
@@ -3011,7 +2942,7 @@ Tabs.Esp:AddButton({
                     end)
                 end
             end
-            
+
             model:GetPropertyChangedSignal("Name"):Connect(function()
                 local nameGui = model:FindFirstChild("ModelName")
                 if nameGui then
@@ -3022,7 +2953,7 @@ Tabs.Esp:AddButton({
                 end
             end)
         end
-        
+
         local function cleanupModels()
             for _, child in ipairs(buildingsFolder:GetChildren()) do
                 if child:IsA("BillboardGui") then
@@ -3032,21 +2963,21 @@ Tabs.Esp:AddButton({
                 end
             end
         end
-        
+
         local function refreshModels()
             cleanupModels()
             for _, model in ipairs(buildingsFolder:GetChildren()) do
                 setupModel(model)
             end
         end
-        
+
         refreshModels()
-        
+
         buildingsFolder.ChildAdded:Connect(function(model)
             task.wait(0.1)
             setupModel(model)
         end)
-        
+
         buildingsFolder.ChildRemoved:Connect(function()
             task.wait(0.1)
             cleanupModels()
@@ -3073,19 +3004,19 @@ local validNPCs = {}
 local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
-local Toggle = Tabs.Aimbot:AddToggle("MyToggle", 
+local Toggle = Tabs.Aimbot:AddToggle("MyToggle",
 {
-    Title = "Aimbot + FOV Circle", 
+    Title = "Aimbot + FOV Circle",
     Description = "Also Has A Keybind (Press T)",
     Default = false,
     Callback = function(value)
         isAiming = value
         FOVring.Visible = value
-    end 
+    end
 })
 
 local function isNPC(obj)
-    return obj:IsA("Model") 
+    return obj:IsA("Model")
         and obj:FindFirstChild("Humanoid")
         and obj.Humanoid.Health > 0
         and obj:FindFirstChild("Head")
@@ -3201,7 +3132,7 @@ UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.T then
         isAiming = not isAiming
         FOVring.Visible = isAiming
-        Toggle:SetValue(isAiming) 
+        Toggle:SetValue(isAiming)
     end
 end)
 updateNPCs()
@@ -3219,5 +3150,3 @@ end)
 game:GetService("Players").PlayerRemoving:Connect(function()
     FOVring:Remove()
 end)
-
-
